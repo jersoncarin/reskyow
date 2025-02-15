@@ -31,6 +31,40 @@ export function fileToJSON(file: File) {
   })
 }
 
+export function jsonToFile(json: {
+  bytes: string
+  name: string
+  type: string
+  lastModified: string
+}): File {
+  const { bytes, name, type, lastModified } = json
+
+  if (!bytes) {
+    throw new Error('Invalid file data: Missing bytes.')
+  }
+
+  // Decode Base64 to binary string
+  const byteCharacters = atob(bytes)
+  const byteArrays: Uint8Array[] = []
+
+  // Convert binary string to Uint8Array
+  for (let i = 0; i < byteCharacters.length; i += 512) {
+    const slice = byteCharacters.slice(i, i + 512)
+    const byteNumbers = new Array(slice.length)
+
+    for (let j = 0; j < slice.length; j++) {
+      byteNumbers[j] = slice.charCodeAt(j)
+    }
+
+    byteArrays.push(new Uint8Array(byteNumbers))
+  }
+
+  return new File(byteArrays, name, {
+    type,
+    lastModified: new Date(lastModified).getTime(),
+  })
+}
+
 export async function respondersPhoneNumber() {
   try {
     const result = await Filesystem.readFile({
