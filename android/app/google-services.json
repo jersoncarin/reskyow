@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "5210698251",
+    "project_id": "reskyow",
+    "storage_bucket": "reskyow.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5210698251:android:c6522a11d9ab4729b20d0e",
+        "android_client_info": {
+          "package_name": "com.jersnet.reskyow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB64AUYK6lVQwzjYdE3t7EgqQLT_8DgjVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

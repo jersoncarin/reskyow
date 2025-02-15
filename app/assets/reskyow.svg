@@ -1,0 +1,43 @@
+<svg width="231" height="254" viewBox="0 0 231 254" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M143 26H13L13.5 252H80.5L74 241.911L70.5 227.786L68 205.085L66 157.665L87 154.638H99V156.152L124 252H227L203.5 229.299L142 154.638L154 144.549L164.5 131.433L171 121.848L175.5 114.281L179 106.21L181 93.5982L183 80.9866L179 67.8705L171 51.2232L155.5 35.5848L143 26Z" fill="white" stroke="white" stroke-width="3"/>
+<line y1="-1.5" x2="101.651" y2="-1.5" transform="matrix(0.265614 0.964079 -0.994141 0.108091 96 155)" stroke="white" stroke-width="3"/>
+<line x1="11" y1="251.5" x2="67" y2="251.5" stroke="white" stroke-width="3"/>
+<line x1="123" y1="251.5" x2="199" y2="251.5" stroke="white" stroke-width="3"/>
+<line y1="-1.5" x2="98.0051" y2="-1.5" transform="matrix(0.0102036 0.999948 -0.999992 0.00402692 10 155)" stroke="white" stroke-width="3"/>
+<path d="M66 158C79.2916 154.965 86.5751 154.184 99 155.879" stroke="white" stroke-width="3"/>
+<path d="M143 153C185.949 219.142 203.492 244.814 213 252H184.921" stroke="white" stroke-width="3"/>
+<path d="M66.9362 157C67.8598 220.116 69.0692 249.339 77 250H66" stroke="white" stroke-width="3"/>
+<line x1="11.5" y1="26.0001" x2="11.4942" y2="155" stroke="white" stroke-width="3"/>
+<line x1="10" y1="24.5" x2="145" y2="24.5" stroke="white" stroke-width="3"/>
+<path d="M143 24C235.25 87.4531 143 155 143 155" stroke="white" stroke-width="3"/>
+<line x1="2" y1="32" x2="2" y2="112" stroke="white" stroke-width="2"/>
+<line x1="2" y1="121" x2="2" y2="155" stroke="white" stroke-width="2"/>
+<line x1="16" y1="16" x2="86" y2="16" stroke="white" stroke-width="2"/>
+<line x1="96" y1="16" x2="144" y2="16" stroke="white" stroke-width="2"/>
+<path d="M1 26C2.93911 19.2411 5.77296 17.6722 12.5 17" stroke="white" stroke-width="2"/>
+<path d="M149 17C172 35.1732 183.286 46.0951 191.5 71" stroke="white" stroke-width="2"/>
+<path d="M193 84C188.044 119.542 178.34 134.902 153 157" stroke="white" stroke-width="2"/>
+<g clip-path="url(#clip0_6_17)" filter="url(#filter0_i_6_17)">
+<path d="M36.5 107H70V141H105V107H139V75H105V40.5H70V75H36.5V107Z" fill="#17A24A" stroke="white"/>
+</g>
+<line x1="64" y1="3" x2="64" y2="16" stroke="white" stroke-width="2"/>
+<line x1="114" y1="3" x2="114" y2="17" stroke="white" stroke-width="2"/>
+<path d="M63.5 3.8778C81.7662 0.11389 92.665 -0.0317321 113.5 3.8778" stroke="white" stroke-width="2"/>
+<path d="M64.5 3.8777C82.6097 8.25145 93.0924 8.43544 112.5 3.8777" stroke="white" stroke-width="2"/>
+<path d="M64 14V4L86 7H101.5L114.5 4V14H64Z" fill="white"/>
+<defs>
+<filter id="filter0_i_6_17" x="36" y="40" width="104" height="106" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_6_17"/>
+</filter>
+<clipPath id="clip0_6_17">
+<rect width="104" height="102" fill="white" transform="translate(36 40)"/>
+</clipPath>
+</defs>
+</svg>

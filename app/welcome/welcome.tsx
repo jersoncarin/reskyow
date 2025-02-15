@@ -1,9 +1,26 @@
-import logoDark from "./logo-dark.svg";
-import logoLight from "./logo-light.svg";
+import { useEffect, useState } from 'react'
+import logoDark from './logo-dark.svg'
+import logoLight from './logo-light.svg'
+import { SplashScreen } from '@capacitor/splash-screen'
+import SafeArea from '~/lib/safe-area-insets'
 
 export function Welcome() {
+  const [state, setStates] = useState('fucking empty')
+
+  useEffect(() => {
+    SplashScreen.hide().then(() => {
+      console.log('SplashScreen hidden')
+
+      SafeArea.getSafeAreaInsets().then((insets) => {
+        if (insets) {
+          setStates(JSON.stringify(insets))
+        }
+      })
+    })
+  }, [])
+
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
+    <main className="flex items-center justify-center insets-y bg-red-100">
       <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
         <header className="flex flex-col items-center gap-9">
           <div className="w-[500px] max-w-[100vw] p-4">
@@ -17,6 +34,7 @@ export function Welcome() {
               alt="React Router"
               className="hidden w-full dark:block"
             />
+            <div>{state}</div>
           </div>
         </header>
         <div className="max-w-[300px] w-full space-y-6 px-4">
@@ -43,13 +61,13 @@ export function Welcome() {
         </div>
       </div>
     </main>
-  );
+  )
 }
 
 const resources = [
   {
-    href: "https://reactrouter.com/docs",
-    text: "React Router Docs",
+    href: 'https://reactrouter.com/docs',
+    text: 'React Router Docs',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -68,8 +86,8 @@ const resources = [
     ),
   },
   {
-    href: "https://rmx.as/discord",
-    text: "Join Discord",
+    href: 'https://rmx.as/discord',
+    text: 'Join Discord',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,4 +104,4 @@ const resources = [
       </svg>
     ),
   },
-];
+]
