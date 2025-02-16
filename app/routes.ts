@@ -16,6 +16,7 @@ export default [
     route('history', 'routes/main/history.tsx'),
     route('profile', 'routes/main/profile.tsx'),
     route('hazard', 'routes/main/hazard.tsx'),
+    route('users', 'routes/main/users.tsx'),
   ]),
   layout('layouts/offline-layout.tsx', [
     route('offline', 'routes/offline/index.tsx'),

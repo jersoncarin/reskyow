@@ -165,13 +165,24 @@ const Profile: FC<Route.ComponentProps> = ({ loaderData }) => {
 
   const onLogout = async () => {
     setIsLoggingOut(true)
-    await account.deleteSession('current')
 
-    setIsLoggingOut(false)
-    toast.success('Logged out successfully')
+    try {
+      const session = await account.getSession('current')
 
-    // Redirect to login page
-    navigate('/', { replace: true })
+      // Delete push target
+      await account.deletePushTarget(session.$id)
+    } catch (error) {
+      console.error('Failed to delete push target')
+    } finally {
+      await account.deleteSession('current')
+
+      setIsLoggingOut(false)
+      toast.success('Logged out successfully')
+
+      // Redirect to login page
+
+      navigate('/', { replace: true })
+    }
   }
 
   return (

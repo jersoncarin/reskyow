@@ -53,6 +53,7 @@ import { cn, formatDate, jsonToFile } from '~/lib/utils'
 import { Browser } from '@capacitor/browser'
 import { useNavigate } from 'react-router'
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
+import { UserInfoModal } from '~/components/user-info-card'
 
 export interface Media {
   id: string
@@ -152,72 +153,80 @@ const EmergencyHomeScreen: FC<Route.ComponentProps> = ({
     const syncOfflineAlerts = async () => {
       let toastId = toast.loading('Syncing offline emergency alerts...')
 
-      const offlineAlerts = await Filesystem.readdir({
-        path: 'offline/emergencies',
-        directory: Directory.Data,
-      })
+      try {
+        const offlineAlerts = await Filesystem.readdir({
+          path: 'offline/emergencies',
+          directory: Directory.Data,
+        })
 
-      for await (const file of offlineAlerts.files) {
-        if (file.type === 'directory') continue
+        for await (const file of offlineAlerts.files) {
+          if (file.type === 'directory') continue
 
-        try {
-          const response = await Filesystem.readFile({
-            path: `offline/emergencies/${file.name}`,
-            directory: Directory.Data,
-            encoding: Encoding.UTF8,
-          })
+          try {
+            const response = await Filesystem.readFile({
+              path: `offline/emergencies/${file.name}`,
+              directory: Directory.Data,
+              encoding: Encoding.UTF8,
+            })
 
-          const emergency = JSON.parse(response.data.toString())
+            const emergency = JSON.parse(response.data.toString())
 
-          const media = emergency.media.map(
-            (item: any) => jsonToFile(item) as File
-          ) as File[]
+            const media = emergency.media.map(
+              (item: any) => jsonToFile(item) as File
+            ) as File[]
 
-          const results = await Promise.allSettled(
-            media.map((item) =>
-              storage.createFile(STORAGE_BUCKET_ID, ID.unique(), item)
+            const results = await Promise.allSettled(
+              media.map((item) =>
+                storage.createFile(STORAGE_BUCKET_ID, ID.unique(), item)
+              )
             )
-          )
 
-          const files = results
-            .filter((result) => result.status === 'fulfilled')
-            .map((result) => result.value.$id)
+            const files = results
+              .filter((result) => result.status === 'fulfilled')
+              .map((result) => result.value.$id)
 
-          const rejected = results.filter(
-            (result) => result.status === 'rejected'
-          )
-
-          if (rejected.length > 0) {
-            toast.error(
-              'Failed to upload some media due to size exceed limit.',
-              {
-                id: toastId,
-              }
+            const rejected = results.filter(
+              (result) => result.status === 'rejected'
             )
+
+            if (rejected.length > 0) {
+              toast.error(
+                'Failed to upload some media due to size exceed limit.',
+                {
+                  id: toastId,
+                }
+              )
+            }
+
+            // Once the notification is sent, we will save the emergency alert to the database
+            await db.createDocument(DB_ID, DB_COLLECTION_ID, ID.unique(), {
+              building_id: buildingId,
+              description,
+              senderId: user?.$id,
+              senderName: user?.name,
+              is_resolved: false,
+              media: files,
+            })
+
+            // Delete the file once it is synced
+            await Filesystem.deleteFile({
+              path: `offline/emergencies/${file.name}`,
+              directory: Directory.Data,
+            })
+          } catch (error) {
+            console.error('Error reading offline emergency alert:', error)
           }
+        }
 
-          // Once the notification is sent, we will save the emergency alert to the database
-          await db.createDocument(DB_ID, DB_COLLECTION_ID, ID.unique(), {
-            building_id: buildingId,
-            description,
-            senderId: user?.$id,
-            senderName: user?.name,
-            is_resolved: false,
-            media: files,
-          })
-
+        if (offlineAlerts.files.length > 0) {
           toast.success('Offline emergency alerts synced successfully.', {
             id: toastId,
           })
-
-          // Delete the file once it is synced
-          await Filesystem.deleteFile({
-            path: `offline/emergencies/${file.name}`,
-            directory: Directory.Data,
-          })
-        } catch (error) {
-          console.error('Error reading offline emergency alert:', error)
         }
+      } catch (error) {
+        console.log('Error reading offline emergency alerts:', error)
+      } finally {
+        toast.dismiss(toastId)
       }
     }
 
@@ -349,6 +358,11 @@ const EmergencyHomeScreen: FC<Route.ComponentProps> = ({
   }
 
   const handleSubmit = async () => {
+    if (!buildingId) {
+      toast.error('Please select a building ID')
+      return
+    }
+
     if (!isNetworkConnected) {
       // Fallback offline mode
       toast.error('No internet connection, trying offline mode now...')
@@ -443,8 +457,8 @@ const EmergencyHomeScreen: FC<Route.ComponentProps> = ({
         <h1 className="text-lg font-semibold mt-1">Emergency</h1>
       </header>
 
-      <main className="mt-24 p-4 max-w-lg mx-auto flex-col flex w-full">
-        <div className="flex-grow flex items-center justify-center w-full">
+      <main className="mt-24 p-4 max-w-lg flex-1 mx-auto flex-col flex w-full">
+        <div className="flex-grow flex items-center justify-center w-full max-w-lg">
           <Dialog open={isEmergency} onOpenChange={setIsEmergency}>
             <DialogTrigger asChild>
               <button
@@ -517,7 +531,7 @@ const EmergencyHomeScreen: FC<Route.ComponentProps> = ({
           </Dialog>
         </div>
 
-        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 mt-8">
+        <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-6 mt-8">
           <h2 className="text-lg font-semibold mb-2">Building ID:</h2>
           <div className="flex items-center mb-2">
             <Select value={buildingId} onValueChange={setBuildingId}>
@@ -692,6 +706,7 @@ const EmergencyHomeScreen: FC<Route.ComponentProps> = ({
                     )}
                     {event.is_resolved ? 'Resolved' : 'Ongoing'}
                   </Badge>
+                  <UserInfoModal senderId={event.senderId} />
                   {event.media.length > 0 && (
                     <div className="pt-2">
                       <h3 className="text-sm font-semibold mb-2">Media:</h3>

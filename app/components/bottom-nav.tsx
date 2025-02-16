@@ -1,9 +1,16 @@
 import type React from 'react'
-import { User, Map, History, OctagonAlert, LoaderCircle } from 'lucide-react'
+import {
+  User,
+  Map,
+  History,
+  OctagonAlert,
+  LoaderCircle,
+  Users,
+} from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { NavLink, useNavigation } from 'react-router'
 
-const BottomNavigation = () => {
+const BottomNavigation = ({ role }: { role: string }) => {
   return (
     <div className="z-50 w-full sticky bottom-0">
       <div className="relative h-full pt-1 ">
@@ -22,6 +29,9 @@ const BottomNavigation = () => {
             icon={<History size={24} />}
             label="History"
           />
+          {role === 'responder' && (
+            <NavItem link="/users" icon={<Users size={24} />} label="Users" />
+          )}
           <NavItem link="/hazard" icon={<Map size={24} />} label="Hazard Map" />
           <NavItem link="/profile" icon={<User size={24} />} label="Profile" />
         </nav>

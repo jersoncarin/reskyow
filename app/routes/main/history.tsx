@@ -14,6 +14,7 @@ import { cn, formatDate } from '~/lib/utils'
 import { Building, Cat, CheckCircle, Clock, Play } from 'lucide-react'
 import { Badge } from '~/components/ui/badge'
 import { Browser } from '@capacitor/browser'
+import { UserInfoModal } from '~/components/user-info-card'
 
 export const clientLoader = async () => {
   const user = await getCurrentUser()
@@ -27,7 +28,7 @@ export const clientLoader = async () => {
   return { user: user!, emergencies }
 }
 
-function MediaItem({ item }: { item: string }) {
+export function MediaItem({ item }: { item: string }) {
   const url = storage.getFileView(STORAGE_BUCKET_ID, item)
   const isVideo = /\.(mp4|mov|avi|webm|mkv)$/i.test(item)
   const imageRef = useRef<HTMLImageElement>(null)
@@ -83,7 +84,7 @@ const History: FC<Route.ComponentProps> = ({ loaderData: { emergencies } }) => {
         <h1 className="text-lg font-semibold mt-1">Emergency History</h1>
       </header>
       <main className="flex-1 p-4 mt-12 max-w-lg mx-auto">
-        <div className="flex flex-col space-y-4 w-full max-w-md">
+        <div className="flex flex-col space-y-4 w-full max-w-lg">
           {emergencies && emergencies.documents.length > 0 ? (
             emergencies.documents.map((event) => (
               <Card
@@ -112,6 +113,7 @@ const History: FC<Route.ComponentProps> = ({ loaderData: { emergencies } }) => {
                     )}
                     {event.is_resolved ? 'Resolved' : 'Ongoing'}
                   </Badge>
+                  <UserInfoModal senderId={event.senderId} />
                   {event.media.length > 0 && (
                     <div className="pt-2">
                       <h3 className="text-sm font-semibold mb-2">Media:</h3>

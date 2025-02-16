@@ -5,7 +5,7 @@ import { Eye, EyeOff, LogIn } from 'lucide-react'
 import Logo from '~/assets/reskyow.svg'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { account } from '~/lib/appwrite'
+import { account, updatePushToken } from '~/lib/appwrite'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -28,6 +28,9 @@ const Login = () => {
     try {
       setLoading(true)
       await account.createEmailPasswordSession(email, password)
+
+      // Create push token
+      await updatePushToken()
 
       toast.success('You have successfully signed in!', { id: toastId })
       navigate('/home', { replace: true })

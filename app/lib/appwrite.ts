@@ -1,4 +1,5 @@
-import { Account, Client, Databases, Functions, Storage } from 'appwrite'
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
+import { Account, Client, Databases, Functions, ID, Storage } from 'appwrite'
 
 const client = new Client()
 
@@ -19,6 +20,23 @@ export async function getCurrentUser() {
     return await account.get()
   } catch (err) {
     return null
+  }
+}
+
+export const updatePushToken = async () => {
+  const token = await Filesystem.readFile({
+    path: 'fcm/token.txt',
+    directory: Directory.Data,
+    encoding: Encoding.UTF8,
+  })
+
+  try {
+    const session = await account.getSession('current')
+    await account.createPushTarget(session.$id, token.data.toString())
+  } catch (e) {
+    console.error('Error updating push token', e)
+  } finally {
+    console.log('Updating push token', token.data.toString())
   }
 }
 

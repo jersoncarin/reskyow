@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Eye, EyeOff, Send } from 'lucide-react'
 import Logo from '~/assets/reskyow.svg'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { account } from '~/lib/appwrite'
+import { account, updatePushToken } from '~/lib/appwrite'
 import { ID } from 'appwrite'
 import {
   Select,
@@ -127,7 +127,20 @@ const Register = () => {
       // Add additional information
       await account.updatePrefs({ ...form, role })
 
-      toast.success('Account created successfully!', { id: toastId })
+      const tId = toast.success('Account created successfully!', {
+        id: toastId,
+      })
+
+      // Wait for 500ms
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      toast.loading('Updating push token...', { id: tId })
+
+      // Create push token
+      await updatePushToken()
+
+      // Token updated
+      toast.success('Push token updated!', { id: tId })
 
       // Redirect
       navigate('/home', { replace: true })

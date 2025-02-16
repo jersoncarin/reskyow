@@ -1,16 +1,10 @@
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
-import { useEffect } from 'react'
 import { Outlet, redirect } from 'react-router'
 import BottomNavigation from '~/components/bottom-nav'
-import { account, getCurrentUser } from '~/lib/appwrite'
-import { Device } from '@capacitor/device'
+import { getCurrentUser } from '~/lib/appwrite'
 import { Capacitor } from '@capacitor/core'
 import { Network } from '@capacitor/network'
-
-Object.defineProperty(navigator, 'onLine', {
-  get: () => false,
-  configurable: true,
-})
+import type { FC } from 'react'
+import type { Route } from './+types/main-layout'
 
 export const clientLoader = async () => {
   if (Capacitor.isNativePlatform()) {
@@ -25,46 +19,17 @@ export const clientLoader = async () => {
   if (!user) {
     return redirect('/')
   }
+
+  return user
 }
 
-const MainLayout = () => {
-  useEffect(() => {
-    const updatePushToken = async () => {
-      const deviceId = await Device.getId()
-      const token = await Filesystem.readFile({
-        path: 'fcm/token.txt',
-        directory: Directory.Data,
-        encoding: Encoding.UTF8,
-      })
-
-      try {
-        await account.createPushTarget(
-          deviceId.identifier,
-          token.data.toString()
-        )
-      } catch (e) {
-        await account.updatePushTarget(
-          deviceId.identifier,
-          token.data.toString()
-        )
-      } finally {
-        console.log('Updating push token', token.data.toString())
-      }
-    }
-
-    window.addEventListener('token_created', updatePushToken)
-
-    return () => {
-      window.removeEventListener('token_created', updatePushToken)
-    }
-  }, [])
-
+const MainLayout: FC<Route.ComponentProps> = ({ loaderData }) => {
   return (
     <main className="flex min-h-dvh bg-background flex-col">
       <div className="flex-1 insets-top">
         <Outlet />
       </div>
-      <BottomNavigation />
+      <BottomNavigation role={loaderData.prefs.role} />
     </main>
   )
 }
