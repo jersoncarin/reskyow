@@ -62,7 +62,7 @@ const Users = () => {
   return (
     <div className="h-full bg-background text-foreground">
       <header className="fixed top-0 w-full insets-top z-10 bg-background flex flex-col items-center justify-center px-3 pb-3">
-        <h1 className="text-lg font-semibold mt-1 mb-4">Emergency History</h1>
+        <h1 className="text-lg font-semibold mt-1 mb-4">Users</h1>
         <div className="w-full max-w-lg relative px-4">
           <Input
             type="text"
