@@ -62,19 +62,21 @@ const Users = () => {
   return (
     <div className="h-full bg-background text-foreground">
       <header className="fixed top-0 w-full insets-top z-10 bg-background flex flex-col items-center justify-center px-3 pb-3">
-        <h1 className="text-lg font-semibold mt-1 mb-4">Users</h1>
-        <div className="w-full max-w-lg relative px-4">
-          <Input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={handleSearchChange}
-            className="pl-10 "
-          />
-          <Search className="w-5 h-5 absolute left-7 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-        </div>
+        <h1 className="text-lg font-semibold mt-1">Users</h1>
       </header>
-      <main className="flex-1 p-4 mt-24 max-w-lg mx-auto">
+      <main className="flex-1 p-4 mt-8 max-w-lg mx-auto">
+        <div className="sticky top-10 bg-background z-10 pb-3">
+          <div className="w-full max-w-lg relative">
+            <Input
+              type="text"
+              placeholder="Search users..."
+              value={search}
+              onChange={handleSearchChange}
+              className="pl-10 "
+            />
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+          </div>
+        </div>
         <div className="flex flex-col space-y-4 w-full max-w-lg">
           {loading ? (
             <div className="flex items-center justify-center w-full h-96 flex-col gap-y-3">
