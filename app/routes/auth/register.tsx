@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Eye, EyeOff, Send } from 'lucide-react'
 import Logo from '~/assets/reskyow.svg'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { account, updatePushToken } from '~/lib/appwrite'
+import { account } from '~/lib/appwrite'
 import { ID } from 'appwrite'
 import {
   Select,
@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { hazard_mapping } from '~/lib/data'
+import { registerNotifications } from '~/root'
 
 type Role = 'responder' | 'student' | 'teacher' | 'staff'
 
@@ -131,19 +132,22 @@ const Register = () => {
         id: toastId,
       })
 
-      // Wait for 500ms
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      toast.loading('Updating push token...', { id: tId })
-
-      // Create push token
-      await updatePushToken()
-
-      // Token updated
-      toast.success('Push token updated!', { id: tId })
-
       // Redirect
       navigate('/home', { replace: true })
+
+      // Wait for the redirect to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      toast.loading('Registering notifications...', { id: tId })
+
+      // Wait if the token_created listener registered
+      setTimeout(async () => {
+        // Register the notification after login
+        await registerNotifications()
+
+        // Wait for the notification to be registered
+        toast.success('Notifications registered!', { id: tId })
+      }, 3000)
     } catch (error) {
       toast.error((error as any).message, { id: toastId })
     } finally {

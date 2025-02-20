@@ -57,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-const registerNotifications = async () => {
+export const registerNotifications = async () => {
   let permStatus = await PushNotifications.checkPermissions()
 
   if (permStatus.receive === 'prompt') {
@@ -100,21 +100,10 @@ export default function App() {
       if (Capacitor.isNativePlatform()) {
         PushNotifications.addListener('registration', async (token) => {
           console.log('Push registration:', token.value)
-
-          try {
-            await Filesystem.writeFile({
-              path: 'fcm/token.txt',
-              data: token.value,
-              directory: Directory.Data,
-              encoding: Encoding.UTF8,
-              recursive: true,
-            })
-
-            // Dispatch the event on the window object
-            window.dispatchEvent(new CustomEvent('token_created'))
-          } catch (e) {
-            console.log("Couldn't write token to file", e)
-          }
+          // Dispatch the event on the window object
+          window.dispatchEvent(
+            new CustomEvent('token_created', { detail: token.value })
+          )
         })
 
         registerNotifications().catch(console.error)

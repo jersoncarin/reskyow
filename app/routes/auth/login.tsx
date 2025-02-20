@@ -5,7 +5,8 @@ import { Eye, EyeOff, LogIn } from 'lucide-react'
 import Logo from '~/assets/reskyow.svg'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { account, updatePushToken } from '~/lib/appwrite'
+import { account } from '~/lib/appwrite'
+import { registerNotifications } from '~/root'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -29,11 +30,24 @@ const Login = () => {
       setLoading(true)
       await account.createEmailPasswordSession(email, password)
 
-      // Create push token
-      await updatePushToken()
-
       toast.success('You have successfully signed in!', { id: toastId })
+
+      // Redirect to the home page
       navigate('/home', { replace: true })
+
+      // Wait for the redirect to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      toast.loading('Registering notifications...', { id: toastId })
+
+      // Wait if the token_created listener registered
+      setTimeout(async () => {
+        // Register the notification after login
+        await registerNotifications()
+
+        // Wait for the notification to be registered
+        toast.success('Notifications registered!', { id: toastId })
+      }, 3000)
     } catch (error) {
       toast.error((error as any).message, { id: toastId })
     } finally {

@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { hazard_mapping } from '~/lib/data'
+import { PushNotifications } from '@capacitor/push-notifications'
 
 export const clientLoader = async () => {
   const user = await getCurrentUser()
@@ -179,8 +180,10 @@ const Profile: FC<Route.ComponentProps> = ({ loaderData }) => {
       setIsLoggingOut(false)
       toast.success('Logged out successfully')
 
-      // Redirect to login page
+      // Unregister push notifications
+      await PushNotifications.unregister()
 
+      // Redirect to login page
       navigate('/', { replace: true })
     }
   }
