@@ -1,13 +1,20 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
 import { Label } from '~/components/ui/label'
-import { ChevronLeft, ChevronRight, Eye, EyeOff, Send } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  Send,
+  Upload,
+} from 'lucide-react'
 import Logo from '~/assets/reskyow.svg'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { account } from '~/lib/appwrite'
+import { account, storage, STORAGE_BUCKET_ID } from '~/lib/appwrite'
 import { ID } from 'appwrite'
 import {
   Select,
@@ -18,6 +25,7 @@ import {
 } from '~/components/ui/select'
 import { hazard_mapping } from '~/lib/data'
 import { registerNotifications } from '~/root'
+import { Card } from '~/components/ui/card'
 
 type Role = 'responder' | 'student' | 'teacher' | 'staff'
 
@@ -46,6 +54,8 @@ const Register = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [licenseId, setLicenseId] = useState<File | null>(null)
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
@@ -85,7 +95,8 @@ const Register = () => {
         formData.schoolName &&
         formData.schoolAddress &&
         formData.buildingNo &&
-        (role !== 'student' || (formData.grade && formData.section))
+        (role !== 'student' || (formData.grade && formData.section)) &&
+        (role !== 'responder' || licenseId)
       )
     }
 
@@ -125,8 +136,27 @@ const Register = () => {
       // Update phone number
       await account.updatePhone(phoneNumber, password)
 
-      // Add additional information
-      await account.updatePrefs({ ...form, role })
+      if (role === 'responder' && licenseId) {
+        const response = await storage.createFile(
+          STORAGE_BUCKET_ID,
+          ID.unique(),
+          licenseId,
+          undefined,
+          (progress) => {
+            toast.loading(`Uploading ${progress.progress}%...`, {
+              id: toastId,
+            })
+          }
+        )
+
+        const url = storage.getFileView(STORAGE_BUCKET_ID, response.$id)
+
+        // Add additional information
+        await account.updatePrefs({ ...form, role, licensePhoto: url })
+      } else {
+        // Add additional information
+        await account.updatePrefs({ ...form, role })
+      }
 
       const tId = toast.success('Account created successfully!', {
         id: toastId,
@@ -152,6 +182,13 @@ const Register = () => {
       toast.error((error as any).message, { id: toastId })
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setLicenseId(file)
     }
   }
 
@@ -341,6 +378,50 @@ const Register = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            {role === 'responder' && (
+              <div className="flex flex-col gap-y-1">
+                <Label
+                  htmlFor="license"
+                  className="text-sm font-medium text-muted-foreground"
+                >
+                  License ID
+                </Label>
+                <Card
+                  id="license"
+                  className="w-full mx-auto cursor-pointer overflow-hidden"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="aspect-[1.586/0.7] relative">
+                    {licenseId ? (
+                      <img
+                        src={URL.createObjectURL(licenseId)}
+                        alt="License ID"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-500">
+                        <Upload size={48} />
+                        <p className="mt-2 text-sm font-medium">
+                          Upload license ID
+                        </p>
+                        <p className="text-xs">Click to change</p>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    name="licensePhoto"
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                    required
+                  />
+                </Card>
+              </div>
+            )}
+
             {role === 'student' && (
               <>
                 <Input
